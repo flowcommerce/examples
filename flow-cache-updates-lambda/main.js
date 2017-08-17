@@ -20,14 +20,20 @@ exports.handler = function (event, context, callback) {
         }
     });
 
-
-    // retreive a redis command for each Kinesis record based on the
-    // provided event discriminator
-    const commands = event.Records.map((record) => {
-        const data = new Buffer(record.kinesis.data, 'base64').toString('utf8');
-        const obj = JSON.parse(data);
-        return cacheOps(obj.discriminator, obj);
-    });
+    let commands = [];
+    try {
+        // retreive a redis command for each Kinesis record based on the
+        // provided event discriminator
+        commands = event.Records.map((record) => {
+            const data = new Buffer(record.kinesis.data, 'base64').toString('utf8');
+            const obj = JSON.parse(data);
+            return cacheOps(obj.discriminator, obj);
+        });
+    } catch (e) {
+        callback(e);
+        redisClient.quit();
+        return;
+    }
 
     const batch = redisClient.batch(commands);
 

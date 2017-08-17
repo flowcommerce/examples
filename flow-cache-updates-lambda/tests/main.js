@@ -63,4 +63,31 @@ describe('the main handler', function() {
         sinon.assert.calledWith(callback, sinon.match.instanceOf(Error));
         sinon.assert.calledOnce(client.quit);
     });
+
+    it('handle an exception when provided an unkown cache key', function() {
+
+        const exec = sinon.stub();
+
+        const client = {
+            batch: sinon.stub()
+                .returns({
+                    exec: exec
+                }),
+            quit: sinon.stub()
+        }
+
+        sinon.stub(redis, 'createClient')
+            .returns(client);
+
+        const callback = sinon.stub();
+        
+        main.handler(mainFixtures.unkownDiscriminatorEvent, null, callback);
+
+        sinon.assert.notCalled(client.batch);
+        sinon.assert.notCalled(exec);
+        sinon.assert.calledWith(callback, sinon.match.instanceOf(Error));
+        sinon.assert.calledOnce(callback);
+        sinon.assert.calledOnce(client.quit);
+    });
+
 });

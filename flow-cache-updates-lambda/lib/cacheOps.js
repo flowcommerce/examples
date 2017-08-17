@@ -35,7 +35,10 @@ cacheOps[constants.ORGANIZATION_COUNTRIES_PUBLISHED] = function(obj) {
  * @param {object} obj (optional) the object to be cached 
  */
 function getOp(discriminator, obj) {
-    return cacheOps[discriminator](obj);
+    if ( !(discriminator in cacheOps)) {
+        throw Error(`unknown cache key discriminator ${discriminator}`);
+    }
+    return cacheOps[discriminator](obj)
 }
 
 module.exports = getOp;
