@@ -8,4 +8,4 @@ then
 fi
 npm install
 npm prune --production
-zip -r $LAMBDA_FILENAME main.js lib node_modules
+zip -r $LAMBDA_FILENAME main.js dynamo_stream.js lib node_modules

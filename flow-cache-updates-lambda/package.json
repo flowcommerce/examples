@@ -9,7 +9,9 @@
   "author": "Flow Commerce <tech@flow.io>",
   "license": "MIT",
   "dependencies": {
-    "redis": "^2.7.1"
+    "aws-sdk": "^2.124.0",
+    "redis": "^2.7.1",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "mocha": "^3.5.0",
