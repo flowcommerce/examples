@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const idGenerator = require('./lib/idGenerator');
+const conversions = require('./lib/conversions');
 
 /**
  * Takes Flow localized items from a Dynamo stream, converts them to
@@ -30,24 +31,12 @@ exports.handler = function (event, context, callback) {
                     item = record.dynamodb.NewImage;
                     discriminator = 'local_item_upserted';
                 }
-                const local = JSON.parse(item.localized_item.M.local.S)
+
                 return {
                     event_id: idGenerator.randomId('evt'),
                     timestamp: new Date().toISOString(),
                     organization: item.organizationId.S,
-                    local_item: {
-                        id: item.id.S,
-                        experience: local.experience,
-                        item: {
-                            id: item.id.S,
-                            number: item.number.S
-                        },
-                        pricing: {
-                            price: local.prices.find(p => p.currency = local.experience.currency),
-                            attributes: local.price_attributes
-                        },
-                        status: localItemEvents.status.S
-                    },
+                    local_item: conversions.dynamoToLocalItem(item),
                     discriminator: discriminator,
                     metadata: {
                         dynamodb: true
